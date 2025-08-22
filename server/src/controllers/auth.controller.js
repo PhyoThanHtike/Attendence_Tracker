@@ -44,7 +44,7 @@ export const signUp = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in signup controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ success:false, message: "Internal Server Error" });
   }
 };
 
@@ -54,18 +54,19 @@ export const login = async (req, res) => {
     console.log(email);
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ success:false, message: "Invalid credentials" });
     }
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ success:false, message: "Invalid credentials" });
     }
 
     generateToken(user.id, res);
 
     res.json({
+      success: true,
       message: "Login successful",
       user: {
         userId: user.id,
@@ -76,7 +77,7 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in login controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -90,4 +91,10 @@ export const logOut = (req, res) => {
     console.log("Error in logout controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
+};
+
+export const checkUser = async (req, res) => {
+  try {
+    const user = req.user;
+  } catch (error) {}
 };
